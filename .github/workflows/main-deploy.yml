@@ -1,0 +1,33 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  buildAndDeploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout & Build
+        uses: actions/checkout@v4
+
+      - name: Build
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+
+        # ADD TEST RUN CMD here
+
+      - name: Gravity Cloud - Dockerize and Release
+        env:
+          GRAVITY_CLOUD_SECRET_KEY: ${{ secrets.GRAVITY_CLOUD_SECRET_KEY }}
+        run: |
+          curl -X GET \
+          -H "X-GRAVITY-SECRET-KEY: $GRAVITY_CLOUD_SECRET_KEY" \
+          -H "X-GITHUB-REPOSITORY: $GITHUB_REPOSITORY" \
+          -H "X-GITHUB-REF: $GITHUB_REF" \
+          https://api.gravitycloud.ai/api/v1/deploy/app-ext
