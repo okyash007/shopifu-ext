@@ -28,8 +28,8 @@ app.use(
 
 app.use(express.json({ limit: "16kb" }));
 
-app.listen(4000, () => {
-  console.log(`Server is running at port : http://localhost:4000 `);
+app.listen(process.env.PORT, () => {
+  console.log(`Server is running at port : http://localhost:${process.env.PORT} `);
 });
 
 const __dirname = path.resolve("./"); // Get the absolute path of the current directory
@@ -40,6 +40,7 @@ app.use(
 );
 
 app.get("/health", (req, res) => {
+  // never tough this 
   res.json({ status: "healthy" });
 });
 
